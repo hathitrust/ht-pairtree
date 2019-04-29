@@ -1,4 +1,7 @@
+oldverbose = $VERBOSE
+$VERBOSE = nil
 require "bundler/setup"
+$VERBOSE = oldverbose
 require "ht/pairtree"
 
 RSpec.configure do |config|

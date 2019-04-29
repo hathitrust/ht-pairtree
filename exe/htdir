@@ -1,0 +1,25 @@
+
+if ARGV.empty? or ARGV.size > 2
+  usage = <<-ENDOFUSAGE
+
+  Get a string corresponding to the data directory for a
+  given HathiTrust id.
+
+  USAGE
+    htdir <id> <optional root directory>
+
+    If the root directory is unspecified, it will default
+    to the environment variable SDRDATAROOT
+
+  ENDOFUSAGE
+  puts usage
+  exit(1)
+
+end
+
+require 'ht/pairtree'
+require 'pathname'
+
+root = ARGV[1] || HathiTrust::Pairtree::SDR_DATA_ROOT_DEFAULT
+
+puts HathiTrust::Pairtree.new(root: root).path_for(ARGV[0])

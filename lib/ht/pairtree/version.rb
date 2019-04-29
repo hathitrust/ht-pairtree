@@ -1,5 +1,5 @@
 module HathiTrust
- class PairTree
+ class Pairtree
     VERSION = "0.1.0"
   end
 end

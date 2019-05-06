@@ -3,9 +3,9 @@ require 'fileutils'
 require 'tmpdir'
 
 
-
 RSpec.describe HathiTrust::Pairtree do
   TMPDIR = Pathname.new(Dir.mktmpdir)
+  puts TMPDIR
 
   idmap = {
     'uc1.c3292592'             => 'sdr1/obj/uc1/pairtree_root/c3/29/25/92/c3292592',
@@ -19,7 +19,7 @@ RSpec.describe HathiTrust::Pairtree do
       dir = TMPDIR + subdir
       puts "Trying to make #{dir}"
       FileUtils.mkdir_p(dir)
-      root = TMPDIR + Pathname.new(subdir.split('/')[0..2].join('/'))
+      root   = TMPDIR + Pathname.new(subdir.split('/')[0..2].join('/'))
       prefix = subdir.split('/')[2]
       File.open(root + 'pairtree_prefix', 'w:utf-8') do |pp|
         pp.print(prefix + '.')
@@ -38,18 +38,21 @@ RSpec.describe HathiTrust::Pairtree do
   end
 
 
-
   describe "translates names into directories" do
     pt = HathiTrust::Pairtree.new(root: TMPDIR + 'sdr1/obj')
 
     idmap.each_pair do |id, dir|
       it id do
-        expect(pt[id].to_s).to eq((TMPDIR + dir).to_s)
+        expect(pt.path_for(id).to_s).to eq((TMPDIR + dir).to_s)
       end
-
     end
-
-
   end
+
+  it "Can create new object directories" do
+    pt = HathiTrust::Pairtree.new(root: TMPDIR + 'sdr1/obj')
+    expect {pt.create('bill.dueber', create_new_namespace: false)}.to raise_error(Pairtree::PathError)
+    expect(pt.create('bill.dueber', create_new_namespace: true).exists?('.')).to be true
+  end
+
 
 end

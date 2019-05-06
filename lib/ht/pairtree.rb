@@ -6,23 +6,25 @@ $VERBOSE = nil
 require 'pairtree'
 $VERBOSE = oldverbose
 
+require 'fileutils'
+
 module HathiTrust
   # A simple Pairtree implementation to make it easier to work with
   # the HathiTrust pairtree structure.
   class Pairtree
+
     class PairtreeError < StandardError;
     end
 
     SDR_DATA_ROOT_DEFAULT = (ENV["SDRDATAROOT"] || '/sdr1') + '/obj'
 
     # Create a new pairtree object rooted at the given directory
-    # @param [String] root The root of the pairtree (takes `ENV['SDRDATAROOT'] + 'obj'` by default)
+    # @param [String] root The root of the über-pairtree (takes `ENV['SDRDATAROOT'] + 'obj'` by default)
     def initialize(root: SDR_DATA_ROOT_DEFAULT)
       @root = Pathname.new(root)
     end
 
-    # Find the pairtree directory for the given obj.
-    # @param [String] htid The HathiTrust ID for an object
+
 
     # Get a Pathname object corresponding to the directory holding data for the given HTID
     # @param [String] htid The HathiTrust ID for an object
@@ -32,23 +34,47 @@ module HathiTrust
     end
 
     alias_method :dir, :path_for
-    alias_method :[], :path_for
     alias_method :path_to, :path_for
 
 
-    def pairtree(htid)
-      pairtree_root[htid]
+    # Get the underlying pairtree for the given obj.
+    # @param [String] htid The HathiTrust ID for an object
+    # @return [Pairtree] the pairtree for that object
+    def pairtree_for(htid)
+      pairtree_root(htid)
+    end
+
+    # Create a pairtree for the given htid. Allow namespace creation
+    # only if told to.
+    # @param [String] htid The HTID
+    # @return [Pairtree::Obj] the underlying pairtree object
+    def create(htid, create_new_namespace: false)
+      create_namespace_dir(htid) if create_new_namespace
+      pairtree_for(htid).mk(htid)
     end
 
 
-    protected
+    def create_namespace_dir(htid)
+      ndir = namespace_dir(htid)
+      return self if Dir.exists?(ndir)
+      Dir.mkdir(ndir)
+      File.open(ndir + "pairtree_prefix", 'w:utf-8') {|f| f.print namespace(htid)}
+      File.open(ndir + "pairtree_version0_1", 'w:utf-8') {|f| }
+      Dir.mkdir(ndir + "pairtree_root")
+      return self
+    end
+
+
+    def namespace_dir(htid)
+      @root + namespace(htid)
+    end
 
     def namespace(htid)
       htid.split('.', 2).first
     end
 
     def pairtree_root(htid)
-      ::Pairtree.at(@root + namespace(htid))
+      ::Pairtree.at(namespace_dir(htid))
     end
 
   end

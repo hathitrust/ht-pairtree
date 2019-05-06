@@ -1,10 +1,10 @@
 # HathiTrust::Pairtree
 
-Get a [Pairtree](https://github.com/mlibrary/pairtree) or [Pathname](http://ruby-doc.org/stdlib-2.6/libdoc/pathname/rdoc/Pathname.html) given an HT identifier when run on a machine
-with access.
+Deal with a [Pairtree](https://github.com/mlibrary/pairtree) given an HTID.
 
+Allows both reading and creation of the underlying pairtree directories
 
-## Example
+## Examples
 
 ```ruby
 
@@ -26,11 +26,23 @@ pt.path_for(id)
 # Equivalent method names
 pt.path_to(id)
 pt.dir(id)
-pt[id]
 
 # Get the underlying Pairtree object for an id
 
 pairtree = pt.pairtree(id)
+
+# ... or use the alias
+
+pairtree = pt[id] 
+
+
+### Create a new pairtree object (directory)
+
+newthing = pt.create('one.two3four')
+#=> Pairtree::PathError (because there's no pairtree at .../obj/one)
+ 
+newthing = pt.create('one.two3four', create_new_namespace: true)
+#=> Pairtree::Obj<blah blah blah>
 
 ```
 ## htdir command line utility

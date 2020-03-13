@@ -1,3 +1,4 @@
+# coding: utf-8
 require "ht/pairtree/version"
 
 # Pairtree is ancient and throws warnings so we suppress them on require
@@ -14,6 +15,9 @@ module HathiTrust
   class Pairtree
 
     class PairtreeError < StandardError;
+    end
+
+    class NamespaceDoesNotExist < PairtreeError
     end
 
     SDR_DATA_ROOT_DEFAULT = (ENV["SDRDATAROOT"] || '/sdr1') + '/obj'
@@ -46,11 +50,23 @@ module HathiTrust
 
     # Create a pairtree for the given htid. Allow namespace creation
     # only if told to.
-    # @param [String] htid The HTID
+    # @param htid [String] The HTID
+    # @param new_namespace_allowed [Boolean] Whether or not to error if the namespace DNE
+    # @raise [NamespaceDoesNotExist] if namespace DNE and new namespace not allowed
     # @return [Pairtree::Obj] the underlying pairtree object
-    def create(htid, create_new_namespace: false)
-      create_namespace_dir(htid) if create_new_namespace
+    def create(htid, new_namespace_allowed: false)
+      if !namespace_exists?(htid)
+        if new_namespace_allowed
+          create_namespace_dir(htid)
+        else
+          raise NamespaceDoesNotExist.new("Namespace #{namespace(htid)} does not exist")
+        end
+      end
       pairtree_for(htid).mk(htid)
+    end
+
+    def namespace_exists?(htid)
+      namespace_dir(htid).exists?
     end
 
 

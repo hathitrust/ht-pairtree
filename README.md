@@ -10,7 +10,7 @@ Allows both reading and creation of the underlying pairtree directories
 
 require 'ht/pairtree'
 
-# rootdir defaults to ENV['SDRROOTDIR'] || '/sdr1/obj'
+# rootdir defaults to ENV['SDRDATAROOT']/obj || '/sdr1/obj'
 pt = HathiTrust::Pairtree.new 
 
 # or pass it in explicitly

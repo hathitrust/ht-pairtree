@@ -50,17 +50,17 @@ RSpec.describe HathiTrust::Pairtree do
 
     it "can create new object directories" do
       expect { pt.create("test.something", new_namespace_allowed: false) }.to raise_error(HathiTrust::Pairtree::NamespaceDoesNotExist)
-      expect(pt.create("test.something", new_namespace_allowed: true).exists?(".")).to be true
+      expect(pt.create("test.something", new_namespace_allowed: true).exist?(".")).to be true
     end
 
     it "create is idempotent" do
       pt.create("test.something", new_namespace_allowed: true)
-      expect(pt.create("test.something").exists?(".")).to be true
+      expect(pt.create("test.something").exist?(".")).to be true
     end
 
     it "new_namespace_allowed is idempotent" do
       pt.create("test.something", new_namespace_allowed: true)
-      expect(pt.create("test.somethingelse", new_namespace_allowed: true).exists?(".")).to be true
+      expect(pt.create("test.somethingelse", new_namespace_allowed: true).exist?(".")).to be true
     end
   end
 end

@@ -39,9 +39,9 @@ pairtree = pt[id]
 ### Create a new pairtree object (directory)
 
 newthing = pt.create('one.two3four')
-#=> Pairtree::PathError (because there's no pairtree at .../obj/one)
+#=> HathiTrust::Pairtree::NamespaceDoesNotExist (because there's no pairtree at .../obj/one)
  
-newthing = pt.create('one.two3four', create_new_namespace: true)
+newthing = pt.create('one.two3four', new_namespace_allowed: true)
 #=> Pairtree::Obj<blah blah blah>
 
 ```

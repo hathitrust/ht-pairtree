@@ -4,22 +4,20 @@ require 'tmpdir'
 
 
 RSpec.describe HathiTrust::Pairtree do
-  TMPDIR = Pathname.new(Dir.mktmpdir)
-  puts TMPDIR
 
-  idmap = {
-    'uc1.c3292592'             => 'sdr1/obj/uc1/pairtree_root/c3/29/25/92/c3292592',
-    'loc.ark:/13960/t9w09k00s' => 'sdr1/obj/loc/pairtree_root/ar/k+/=1/39/60/=t/9w/09/k0/0s/ark+=13960=t9w09k00s',
-    'ia.ark:/13960/t9w10cs7x'  => 'sdr1/obj/ia/pairtree_root/ar/k+/=1/39/60/=t/9w/10/cs/7x/ark+=13960=t9w10cs7x'
-  }
+  let(:idmap) do
+    {
+      'uc1.c3292592'             => 'sdr1/obj/uc1/pairtree_root/c3/29/25/92/c3292592',
+      'loc.ark:/13960/t9w09k00s' => 'sdr1/obj/loc/pairtree_root/ar/k+/=1/39/60/=t/9w/09/k0/0s/ark+=13960=t9w09k00s',
+      'ia.ark:/13960/t9w10cs7x'  => 'sdr1/obj/ia/pairtree_root/ar/k+/=1/39/60/=t/9w/10/cs/7x/ark+=13960=t9w10cs7x'
+    }
+  end
 
-
-  before(:context) do
+  def make_paths(idmap)
     idmap.values.each do |subdir|
-      dir = TMPDIR + subdir
-      puts "Trying to make #{dir}"
+      dir = @tmpdir + subdir
       FileUtils.mkdir_p(dir)
-      root   = TMPDIR + Pathname.new(subdir.split('/')[0..2].join('/'))
+      root   = @tmpdir + Pathname.new(subdir.split('/')[0..2].join('/'))
       prefix = subdir.split('/')[2]
       File.open(root + 'pairtree_prefix', 'w:utf-8') do |pp|
         pp.print(prefix + '.')
@@ -28,30 +26,44 @@ RSpec.describe HathiTrust::Pairtree do
     end
   end
 
-  after(:context) do
-    FileUtils.rm_f(TMPDIR)
+  around(:each) do |example|
+    Dir.mktmpdir do |d|
+      @tmpdir = Pathname.new(d)
+      FileUtils.mkdir_p(@tmpdir + "sdr1/obj")
+      example.run
+    end
   end
-
 
   it "has a version number" do
     expect(HathiTrust::Pairtree::VERSION).not_to be nil
   end
 
-
-  describe "translates names into directories" do
-    pt = HathiTrust::Pairtree.new(root: TMPDIR + 'sdr1/obj')
+  it "translates names into directories" do
+    make_paths(idmap)
+    pt = HathiTrust::Pairtree.new(root: @tmpdir + 'sdr1/obj')
 
     idmap.each_pair do |id, dir|
-      it id do
-        expect(pt.path_for(id).to_s).to eq((TMPDIR + dir).to_s)
-      end
+      expect(pt.path_for(id).to_s).to eq((@tmpdir + dir).to_s)
     end
   end
 
-  it "Can create new object directories" do
-    pt = HathiTrust::Pairtree.new(root: TMPDIR + 'sdr1/obj')
-    expect {pt.create('bill.dueber', create_new_namespace: false)}.to raise_error(Pairtree::PathError)
-    expect(pt.create('bill.dueber', create_new_namespace: true).exists?('.')).to be true
+  describe "#create" do
+    let(:pt) { HathiTrust::Pairtree.new(root: @tmpdir + 'sdr1/obj') }
+
+    it "can create new object directories" do
+      expect {pt.create('test.something', new_namespace_allowed: false)}.to raise_error(HathiTrust::Pairtree::NamespaceDoesNotExist)
+      expect(pt.create('test.something', new_namespace_allowed: true).exists?('.')).to be true
+    end
+
+    it "create is idempotent" do
+      pt.create('test.something', new_namespace_allowed: true)
+      expect(pt.create('test.something').exists?('.')).to be true
+    end
+
+    it "new_namespace_allowed is idempotent" do
+      pt.create('test.something', new_namespace_allowed: true)
+      expect(pt.create('test.somethingelse', new_namespace_allowed: true).exists?('.')).to be true
+    end
   end
 
 

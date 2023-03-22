@@ -66,7 +66,7 @@ module HathiTrust
     end
 
     def namespace_exists?(htid)
-      namespace_dir(htid).exists?
+      namespace_dir(htid).exist?
     end
 
 

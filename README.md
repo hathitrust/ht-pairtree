@@ -1,5 +1,7 @@
 # HathiTrust::Pairtree
 
+[![Tests](https://github.com/hathitrust/ht-pairtree/actions/workflows/tests.yml/badge.svg)](https://github.com/hathitrust/ht-pairtree/actions/workflows/tests.yml)
+
 Deal with a [Pairtree](https://github.com/mlibrary/pairtree) given an HTID.
 
 Allows both reading and creation of the underlying pairtree directories

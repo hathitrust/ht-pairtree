@@ -33,10 +33,7 @@ Gem::Specification.new do |spec|
   spec.executables = %w[htdir]
   spec.require_paths = ["lib"]
 
-  # The 'pairtree' gem seems to be abandoned. Use the mlibrary
-  # clone
-  spec.add_dependency "rpairtree"
-
+  spec.add_dependency "pairtree", "~> 0.3"
   spec.add_development_dependency "bundler", "~> 2.0"
   spec.add_development_dependency "rake", "~> 12.0"
   spec.add_development_dependency "rspec", "~> 3.0"

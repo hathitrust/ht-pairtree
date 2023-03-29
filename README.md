@@ -71,7 +71,7 @@ function htcd() {
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'ht-rpairtree'
+gem 'ht-pairtree'
 ```
 
 And then execute:

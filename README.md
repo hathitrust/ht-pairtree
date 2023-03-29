@@ -1,5 +1,7 @@
 # HathiTrust::Pairtree
 
+[![Tests](https://github.com/hathitrust/ht-pairtree/actions/workflows/tests.yml/badge.svg)](https://github.com/hathitrust/ht-pairtree/actions/workflows/tests.yml)
+
 Deal with a [Pairtree](https://github.com/mlibrary/pairtree) given an HTID.
 
 Allows both reading and creation of the underlying pairtree directories
@@ -39,9 +41,9 @@ pairtree = pt[id]
 ### Create a new pairtree object (directory)
 
 newthing = pt.create('one.two3four')
-#=> Pairtree::PathError (because there's no pairtree at .../obj/one)
+#=> HathiTrust::Pairtree::NamespaceDoesNotExist (because there's no pairtree at .../obj/one)
  
-newthing = pt.create('one.two3four', create_new_namespace: true)
+newthing = pt.create('one.two3four', new_namespace_allowed: true)
 #=> Pairtree::Obj<blah blah blah>
 
 ```
@@ -69,7 +71,7 @@ function htcd() {
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'ht-rpairtree'
+gem 'ht-pairtree'
 ```
 
 And then execute:

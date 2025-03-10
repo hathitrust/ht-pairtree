@@ -5,8 +5,8 @@ require "ht/pairtree/version"
 Gem::Specification.new do |spec|
   spec.name = "ht-pairtree"
   spec.version = HathiTrust::Pairtree::VERSION
-  spec.authors = ["Bill Dueber"]
-  spec.email = ["bill@dueber.com"]
+  spec.authors = ["Bill Dueber", "Aaron Elkiss"]
+  spec.email = ["bill@dueber.com", "aelkiss@hathitrust.org"]
   spec.summary = "Pairtree with extra sugar for the HathiTrust environment"
   # spec.description   = %q{TODO: Write a longer description or delete this line.}
   spec.homepage = "https://github.com/hathitrust/ht-pairtree"
